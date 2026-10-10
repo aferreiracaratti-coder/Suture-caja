@@ -1,0 +1,25 @@
+[Unit]
+Description=Suture Caja API
+After=network-online.target postgresql.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=suturecaja
+Group=suturecaja
+WorkingDirectory=/opt/suture-caja
+EnvironmentFile=/etc/suture-caja/caja.env
+Environment=SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE=4
+Environment=SERVER_TOMCAT_THREADS_MAX=40
+ExecStart=/usr/bin/java -Xms64m -Xmx256m -jar /opt/suture-caja/suture-caja.jar
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+UMask=0077
+MemoryMax=550M
+
+[Install]
+WantedBy=multi-user.target

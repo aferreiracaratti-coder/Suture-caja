@@ -1,0 +1,6 @@
+[Unit]
+Description=Backup Suture Caja PostgreSQL
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/suture-caja-backup.sh

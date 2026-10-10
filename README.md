@@ -2,6 +2,8 @@
 
 MVP minorista independiente de Marcha POS. Backend Java 21 / Spring Boot 3.5.6 / PostgreSQL 16 y frontend Angular 21. Los importes se calculan en el backend y las ventas, pagos, movimientos de stock y efectivo se confirman en una transacción.
 
+La instalación inicial del servidor y el procedimiento de actualización están en [deploy/README.md](deploy/README.md).
+
 ## Entorno local
 
 Se necesitan Java 21, Maven, Node 24, npm y PostgreSQL 16 (el `compose.yaml` ofrece una instancia aislada). Definir una contraseña propia para la base y otra, de al menos 12 caracteres, para el administrador. No se incluyen credenciales reales.
