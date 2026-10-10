@@ -22,6 +22,13 @@ describe('Suture Caja POS', () => {
     expect(app.cartTotal()).toBe(300);
     app.remove('p-2'); expect(app.cartTotal()).toBe(250);
   });
+  it('mantiene la línea mientras se reemplaza una cantidad', () => {
+    app.add(app.products()[0]);
+    app.quantity('p-1','');
+    expect(app.cart()).toHaveLength(1);
+    app.quantity('p-1',2);
+    expect(app.cartTotal()).toBe(250);
+  });
   it('registra pagos mixtos y calcula vuelto sólo sobre efectivo', () => {
     app.add(app.products()[0]); app.quantity('p-1',2);
     app.openCheckout(); app.paymentMethod='CASH'; app.paymentAmount=100; app.cashTendered=120; app.addPayment();
