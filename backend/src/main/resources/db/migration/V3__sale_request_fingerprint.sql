@@ -1,0 +1,1 @@
+ALTER TABLE sales ADD COLUMN request_hash VARCHAR(64);

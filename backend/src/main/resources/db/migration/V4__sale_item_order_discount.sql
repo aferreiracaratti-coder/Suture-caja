@@ -1,0 +1,1 @@
+ALTER TABLE sale_items ADD COLUMN order_discount NUMERIC(15,2) NOT NULL DEFAULT 0;
