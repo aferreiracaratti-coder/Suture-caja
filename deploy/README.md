@@ -3,7 +3,9 @@
 Instancia inicial: `suture-prod-01` (`216.238.119.80`). La API corre como
 `suturecaja` bajo systemd en `127.0.0.1:8095`; Nginx sirve Angular y envía
 `/api/` a la API. PostgreSQL usa la base y el rol exclusivos `suture_caja`.
-El sitio temporal con TLS es `https://caja.216.238.119.80.sslip.io/`.
+El sitio definitivo con TLS es `https://caja.suturesistemas.com/`.
+El sitio temporal `https://caja.216.238.119.80.sslip.io/` también sigue
+disponible durante la transición.
 
 ## Archivos del servidor
 
@@ -11,7 +13,10 @@ El sitio temporal con TLS es `https://caja.216.238.119.80.sslip.io/`.
 - `/var/www/suture-caja/`: salida de `npm run build` (`frontend/dist/frontend/browser/`).
 - `/etc/systemd/system/suture-caja.service`: unidad basada en `suture-caja.service`.
 - `/etc/suture-caja/caja.env`: variables privadas, modo `0600`, propiedad root.
-- `/etc/nginx/sites-available/suture-caja`: sitio HTTPS administrado por Certbot.
+- `/etc/nginx/sites-available/suture-caja`: sitio HTTPS basado en
+  `nginx-site.conf`, con certificado emitido por Certbot.
+- `/etc/nginx/snippets/suture-caja-app.conf`: rutas Angular y proxy de API,
+  basado en `nginx-app.conf`.
 - `/usr/local/sbin/suture-caja-backup.sh` y unidades `suture-caja-backup.*`:
   copia diaria de PostgreSQL, retención de 14 días.
 
@@ -38,16 +43,15 @@ con datos reales, ejecutar el backup y revisar el cambio de esquema.
 
 ## Dominio definitivo
 
-Configurar `caja.suturesistemas.com` con `A` a `216.238.119.80` y, si se
-utiliza IPv6, `AAAA` a `2001:19f0:b800:14d1:5400:06ff:fe9a:66e5`.
-Ambas direcciones respondieron con HTTPS durante la instalación. El servidor
-actualmente redirige el HTTP de ese nombre al sitio temporal. Cuando el DNS
-resuelva públicamente, emitir un certificado para el nombre definitivo y
-revisar que Nginx sirva la aplicación en HTTPS directamente:
+`caja.suturesistemas.com` tiene un registro `A` a `216.238.119.80`.
+También se puede agregar `AAAA` a
+`2001:19f0:b800:14d1:5400:06ff:fe9a:66e5`, cuya conectividad HTTPS fue
+verificada. El certificado del dominio definitivo se emitió el 10 de octubre
+de 2026 y vence el 8 de enero de 2027. Certbot tiene renovación automática.
+Para comprobarla:
 
 ```bash
-sudo certbot --nginx -d caja.suturesistemas.com --redirect
-sudo nginx -t && sudo systemctl reload nginx
+sudo certbot renew --cert-name caja.suturesistemas.com --dry-run --no-random-sleep-on-renew
 ```
 
 ## Comprobaciones
