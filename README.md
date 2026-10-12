@@ -54,16 +54,15 @@ Todas las rutas `/api` exigen HTTP Basic. El tenant se toma del usuario autentic
 
 ## Pruebas
 
+La simulación completa usa un contenedor PostgreSQL 16 descartable, dos bases nuevas, un backend local y un agente de impresión deliberadamente inaccesible. No usa el servidor ni la base demo. Requiere Docker, Java 21, Maven, Node/npm, Python 3, curl y OpenSSL; instalar primero las dependencias del frontend con `cd frontend && npm ci` si faltan.
+
 ```bash
-cd backend && mvn test
-cd frontend && npm run build
+bash scripts/run-mvp-simulation.sh
 ```
 
-La suite de integración PostgreSQL se habilita con `CAJA_TEST_DB_URL` apuntando a una **base de pruebas dedicada** (nunca la base demo ni producción), junto con `CAJA_TEST_DB_USERNAME` y `CAJA_TEST_DB_PASSWORD`. Ejecuta migraciones y ventas/arqueos reales sobre esa base. `mvn test` sin esa variable no valida persistencia PostgreSQL. En este workspace el sandbox impidió abrir sockets para PostgreSQL; el flujo completo con navegador y hardware térmico queda pendiente de ejecutar en un entorno de piloto.
+El script ejecuta 18 pruebas backend (12 con PostgreSQL), 5 pruebas Angular, el build y 36 verificaciones de una jornada comercial por HTTP. Incluye dos turnos, búsquedas, inventario, permisos, pagos mixtos, idempotencia, descuentos, anulación, arqueo, reportes, stock fraccionario/negativo y fallo de impresión sin revertir la venta. La suite de integración solo se habilita con `CAJA_TEST_DB_URL` en una base dedicada: `mvn test` sin esa variable no comprueba persistencia.
 
-En una base de prueba dedicada, `CAJA_SMOKE_TEST_DB=1 CAJA_SMOKE_ADMIN=... CAJA_SMOKE_ADMIN_PASSWORD=... python scripts/api-smoke.py` recorre alta de producto, cajero, apertura, venta, stock, ticket, cierre y reporte. Este script quedó preparado, pero no se pudo ejecutar aquí por la misma restricción de PostgreSQL.
-
-Antes del primer comercio real hay que ejecutar las 12 pruebas PostgreSQL en una base aislada, completar una jornada E2E en navegador, probar la impresora física elegida y configurar HTTPS, backups, monitoreo y credenciales propias. El alta de nuevos tenants fuera del bootstrap inicial es todavía una tarea operativa; no hay pantalla de aprovisionamiento de plataforma. Las devoluciones parciales, reversión bancaria y emisión/nota de crédito fiscal no están implementadas.
+La UI se verificó manualmente en navegador local con una venta completa, datos contrastados directamente en PostgreSQL y vistas de escritorio (1366×768) y móvil (390×844). Esta comprobación visual no forma parte del script automatizado. El hardware térmico real, la emisión fiscal y la reversión bancaria siguen pendientes de pruebas externas. El alta de nuevos tenants fuera del bootstrap inicial es una tarea operativa; no hay pantalla de aprovisionamiento de plataforma. Las devoluciones parciales tampoco están implementadas.
 
 ## Impresión y fiscal
 
